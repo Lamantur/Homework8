@@ -1,45 +1,48 @@
+import re
+import csv
+data_info = ['info_1.txt', 'info_2.txt', 'info_3.txt']
+main_data = [['Изготовитель системы',
+              'Название ОС', 'Код продукта', 'Тип системы']]
 
 
-"""
-1. Задание на закрепление знаний по модулю CSV. Написать скрипт,
-осуществляющий выборку определенных данных из файлов info_1.txt, info_2.txt,
-info_3.txt и формирующий новый «отчетный» файл в формате CSV.
+def get_data(main_data):
 
-Для этого:
+    j = 0
+    while j < 4:
+        column = []
+        k = 0
+        while k < 3:
+            file = open(data_info[k], "r")
+            string_from_file = file.readlines()
 
-Создать функцию get_data(), в которой в цикле осуществляется перебор файлов
-с данными, их открытие и считывание данных. В этой функции из считанных данных
-необходимо с помощью регулярных выражений извлечь значения параметров
-«Изготовитель системы», «Название ОС», «Код продукта», «Тип системы».
-Значения каждого параметра поместить в соответствующий список. Должно
-получиться четыре списка — например, os_prod_list, os_name_list,
-os_code_list, os_type_list. В этой же функции создать главный список
-для хранения данных отчета — например, main_data — и поместить в него
-названия столбцов отчета в виде списка: «Изготовитель системы»,
-«Название ОС», «Код продукта», «Тип системы». Значения для этих
-столбцов также оформить в виде списка и поместить в файл main_data
-(также для каждого файла);
+            for i in range(len(string_from_file)):
+                if re.findall(main_data[0][j], string_from_file[i]) == [main_data[0][j]]:
+                    string_from_file[i] = [
+                        x.rstrip(main_data[0][j]) for x in string_from_file[i]]
+                    string_from_file[i] = [
+                        x.rstrip('\n') for x in string_from_file[i]]
 
-Создать функцию write_to_csv(), в которую передавать ссылку на CSV-файл.
-В этой функции реализовать получение данных через вызов функции get_data(),
-а также сохранение подготовленных данных в соответствующий CSV-файл;
+                    string_from_file[i] = [
+                        x.rstrip(':') for x in string_from_file[i]]
+                    string_from_file[i] = "".join(string_from_file[i])
+                    column.append(string_from_file[i])
 
-Пример того, что должно получиться:
+            k = k + 1
+            file.close()
 
-Изготовитель системы,Название ОС,Код продукта,Тип системы
+        # main_data.append(main_data[j])
+        j = j+1
+        main_data.append(column)
+        print(f"Добавлены данные: {column}")
+    return main_data
 
-1,LENOVO,Windows 7,00971-OEM-1982661-00231,x64-based
 
-2,ACER,Windows 10,00971-OEM-1982661-00231,x64-based
+def write_to_csv(main_data):
+    main_data = get_data(main_data)
+    with open('data_report.csv', 'w') as f_n:
+        f_n_writer = csv.writer(f_n)
+        for row in main_data:
+            f_n_writer.writerow(row)
 
-3,DELL,Windows 8.1,00971-OEM-1982661-00231,x86-based
 
-Обязательно проверьте, что у вас получается примерно то же самое.
-
-ПРОШУ ВАС НЕ УДАЛЯТЬ СЛУЖЕБНЫЕ ФАЙЛЫ TXT И ИТОГОВЫЙ ФАЙЛ CSV!!!
-"""
-
-"""
-os_prod_reg = re.compile(r'Изготовитель системы:\s*\S*')
-os_prod_list.append(os_prod_reg.findall(data)[0].split()[2])
-"""
+write_to_csv(main_data)
