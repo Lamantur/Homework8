@@ -39,7 +39,7 @@ def get_data(main_data):
 
 def write_to_csv(main_data):
     main_data = get_data(main_data)
-    with open('data_report.csv', 'w') as f_n:
+    with open('data_report2.csv', 'w') as f_n:
         f_n_writer = csv.writer(f_n)
         for row in main_data:
             f_n_writer.writerow(row)
